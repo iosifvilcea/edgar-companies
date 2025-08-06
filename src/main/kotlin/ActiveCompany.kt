@@ -3,7 +3,7 @@ package com.blankthings
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Submission(
+data class ActiveCompany(
     val cik: Long,
     val entityType: String,
     val sicDescription: String,
