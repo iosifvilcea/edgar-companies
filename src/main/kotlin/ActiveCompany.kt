@@ -10,7 +10,7 @@ data class ActiveCompany(
     val name: String,
     val tickers: List<String>,
     val exchanges: List<String>,
-    val ein: String,
+    val ein: String?,
     val filings: Filings
 )
 

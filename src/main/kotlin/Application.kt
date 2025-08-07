@@ -26,7 +26,7 @@ fun Application.configureStatusPages() {
 
 fun Application.configureRateLimit() {
     install(RateLimit) {
-        register(RateLimitName(SUBMISSIONS_RATE_LIMIT)) {
+        global {
             rateLimiter(limit = 10, refillPeriod = 1.seconds)
         }
     }
