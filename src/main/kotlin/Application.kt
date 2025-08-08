@@ -1,5 +1,6 @@
 package com.blankthings
 
+import configureDatabases
 import io.ktor.server.application.*
 import io.ktor.server.plugins.ratelimit.*
 import io.ktor.server.plugins.statuspages.*
@@ -13,6 +14,7 @@ fun main(args: Array<String>) {
 fun Application.module() {
     val companyRepository = FakeCompanyRepositoryImpl()
 
+    configureDatabases()
     configureStatusPages()
     configureRateLimit()
     configureRouting(companyRepository)
