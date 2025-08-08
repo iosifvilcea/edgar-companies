@@ -14,6 +14,8 @@ application {
 dependencies {
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.kotlin.date.time)
+    implementation(libs.exposed.dao)
     implementation(libs.h2)
     implementation(libs.postgresql)
     implementation(libs.ktor.client.core)

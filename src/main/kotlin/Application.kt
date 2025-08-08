@@ -1,6 +1,6 @@
 package com.blankthings
 
-import configureDatabases
+import database.configureDatabases
 import io.ktor.server.application.*
 import io.ktor.server.plugins.ratelimit.*
 import io.ktor.server.plugins.statuspages.*
