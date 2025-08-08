@@ -11,9 +11,11 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    val companyRepository = FakeCompanyRepositoryImpl()
+
     configureStatusPages()
     configureRateLimit()
-    configureRouting()
+    configureRouting(companyRepository)
 }
 
 fun Application.configureStatusPages() {
