@@ -9,7 +9,7 @@ import java.lang.Exception
 fun Route.companiesRoutes(companyRepository: CompanyRepository) {
     route("/companies") {
         get {
-            val activeCompanies = companyRepository.getActiveCompanies()
+            val activeCompanies = companyRepository.allActiveCompanies()
             println("Fetched ActiveCompanies: $activeCompanies")
         }
     }

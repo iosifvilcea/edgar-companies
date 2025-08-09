@@ -154,5 +154,5 @@ class FakeCompanyRepositoryImpl: CompanyRepository {
         )
     )
 
-    override suspend fun getActiveCompanies(): List<ActiveCompany> = activeCompanies
+    override suspend fun allActiveCompanies(): List<ActiveCompany> = activeCompanies
 }

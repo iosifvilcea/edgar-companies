@@ -38,22 +38,20 @@ class ActiveCompanyDao(id: EntityID<Int>): IntEntity(id) {
     var ein by ActiveCompanyTable.ein
     var fillingDates by ActiveCompanyTable.fillingDates
     var fillingForms by ActiveCompanyTable.fillingForms
-    var createdAt by ActiveCompanyTable.createdAt
-    var updatedAt by ActiveCompanyTable.updatedAt
 }
 
 suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
 fun daoToModel(dao: ActiveCompanyDao) = ActiveCompany(
-    dao.cik,
-    dao.entityType,
-    dao.sicDescription,
-    dao.name,
-    dao.tickers,
-    dao.exchanges,
-    dao.ein,
-    Filings(
+    cik = dao.cik,
+    entityType = dao.entityType,
+    sicDescription = dao.sicDescription,
+    name = dao.name,
+    tickers = dao.tickers,
+    exchanges = dao.exchanges,
+    ein = dao.ein,
+    filings = Filings(
         Recent(
             dao.fillingDates,
             dao.fillingForms
