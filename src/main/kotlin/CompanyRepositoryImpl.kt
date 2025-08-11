@@ -2,7 +2,6 @@ import com.blankthings.ActiveCompany
 import com.blankthings.CompanyRepository
 import database.ActiveCompanyDao
 import database.ActiveCompanyTable
-import database.ActiveCompanyTable.cik
 import database.ActiveCompanyTable.ein
 import database.ActiveCompanyTable.entityType
 import database.ActiveCompanyTable.exchanges
@@ -11,8 +10,8 @@ import database.ActiveCompanyTable.fillingForms
 import database.ActiveCompanyTable.name
 import database.ActiveCompanyTable.sicDescription
 import database.ActiveCompanyTable.tickers
-import database.daoToModel
 import database.suspendTransaction
+import database.toModel
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.notInList
 import org.jetbrains.exposed.v1.core.statements.UpsertSqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.batchUpsert
@@ -20,12 +19,12 @@ import org.jetbrains.exposed.v1.jdbc.deleteWhere
 
 class CompanyRepositoryImpl: CompanyRepository {
     override suspend fun allActiveCompanies(): List<ActiveCompany> = suspendTransaction {
-        ActiveCompanyDao.all().map(::daoToModel)
+        ActiveCompanyDao.all().map { it.toModel() }
     }
 
     override suspend fun addCompany(activeCompany: ActiveCompany) {
         ActiveCompanyDao.new {
-            cik = activeCompany.cik
+            id._value = activeCompany.cik
             entityType = activeCompany.entityType
             sicDescription = activeCompany.sicDescription
             name = activeCompany.name
@@ -41,9 +40,9 @@ class CompanyRepositoryImpl: CompanyRepository {
         suspendTransaction {
             ActiveCompanyTable.batchUpsert(
                 activeCompanies,
-                keys = arrayOf(ActiveCompanyTable.cik)
+                keys = arrayOf(ActiveCompanyTable.id)
             ) { activeCompany ->
-                this[cik] = activeCompany.cik
+                this[ActiveCompanyTable.id] = activeCompany.cik
                 this[entityType] = activeCompany.entityType
                 this[sicDescription] = activeCompany.sicDescription
                 this[name] = activeCompany.name
@@ -58,7 +57,7 @@ class CompanyRepositoryImpl: CompanyRepository {
 
     override suspend fun deleteCompany(activeCompany: ActiveCompany): Boolean = suspendTransaction {
         val rowDeleted = ActiveCompanyTable.deleteWhere {
-            ActiveCompanyTable.cik eq activeCompany.cik
+            ActiveCompanyTable.id eq activeCompany.cik
         }
         rowDeleted == 1
     }
@@ -67,9 +66,9 @@ class CompanyRepositoryImpl: CompanyRepository {
         suspendTransaction {
             ActiveCompanyTable.batchUpsert(
                 activeCompanies,
-                keys = arrayOf(ActiveCompanyTable.cik)
+                keys = arrayOf(ActiveCompanyTable.id)
             ) { company ->
-                this[cik] = company.cik
+                this[ActiveCompanyTable.id] = company.cik
                 this[entityType] = company.entityType
                 this[sicDescription] = company.sicDescription
                 this[name] = company.name
@@ -81,7 +80,7 @@ class CompanyRepositoryImpl: CompanyRepository {
             }
 
             ActiveCompanyTable.deleteWhere {
-                ActiveCompanyTable.cik notInList activeCompanies.map { it.cik }
+                ActiveCompanyTable.id notInList activeCompanies.map { it.cik }
             }
         }
     }
