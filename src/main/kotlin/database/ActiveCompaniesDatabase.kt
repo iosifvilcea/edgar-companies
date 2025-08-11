@@ -10,7 +10,7 @@ import org.jetbrains.exposed.v1.jdbc.Database
 fun Application.configureDatabases() {
     Database.connect(
         "jdbc:postgresql://localhost:5432/edgar_companies_db",
-        user = "postgres",
+        user = "data_man",
         password = "password"
     )
 }

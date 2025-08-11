@@ -15,7 +15,6 @@ import database.daoToModel
 import database.suspendTransaction
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.notInList
 import org.jetbrains.exposed.v1.core.statements.UpsertSqlExpressionBuilder.eq
-import org.jetbrains.exposed.v1.jdbc.batchInsert
 import org.jetbrains.exposed.v1.jdbc.batchUpsert
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 
@@ -40,7 +39,10 @@ class CompanyRepositoryImpl: CompanyRepository {
 
     override suspend fun addCompanies(activeCompanies: List<ActiveCompany>) {
         suspendTransaction {
-            ActiveCompanyTable.batchInsert(activeCompanies) { activeCompany ->
+            ActiveCompanyTable.batchUpsert(
+                activeCompanies,
+                keys = arrayOf(ActiveCompanyTable.cik)
+            ) { activeCompany ->
                 this[cik] = activeCompany.cik
                 this[entityType] = activeCompany.entityType
                 this[sicDescription] = activeCompany.sicDescription
@@ -63,7 +65,10 @@ class CompanyRepositoryImpl: CompanyRepository {
 
     override suspend fun updateCompanies(activeCompanies: List<ActiveCompany>) {
         suspendTransaction {
-            ActiveCompanyTable.batchUpsert(activeCompanies, ActiveCompanyTable.cik) { company ->
+            ActiveCompanyTable.batchUpsert(
+                activeCompanies,
+                keys = arrayOf(ActiveCompanyTable.cik)
+            ) { company ->
                 this[cik] = company.cik
                 this[entityType] = company.entityType
                 this[sicDescription] = company.sicDescription

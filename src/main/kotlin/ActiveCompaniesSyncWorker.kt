@@ -38,24 +38,21 @@ class ActiveCompaniesSyncWorker(
     suspend fun getActiveCompany(companyTickers: Map<String, CompanyTicker>): List<ActiveCompany> {
         val activeCompanies = mutableListOf<ActiveCompany>()
         companyTickers.forEach { companyTicker ->
-            val timeElapsed = measureTime {
-                val cikPadded = companyTicker.value.cik.toString().padStart(10, '0')
-                val baseSubmissionUrl = "https://data.sec.gov/submissions/CIK${cikPadded}.json"
-                val company: ActiveCompany = client.get(baseSubmissionUrl).body()
-                val filings = company.filings.recent.form.zip(company.filings.recent.filingDate)
+            val cikPadded = companyTicker.value.cik.toString().padStart(10, '0')
+            val baseSubmissionUrl = "https://data.sec.gov/submissions/CIK${cikPadded}.json"
+            val company: ActiveCompany = client.get(baseSubmissionUrl).body()
+            val filings = company.filings.recent.form.zip(company.filings.recent.filingDate)
 
-                filings.forEach { filing ->
-                    if (filing.first in validForms) {
-                        val fileDate = LocalDate.parse(filing.second, dateFormatter)
-                        if (fileDate.isBefore(cutoffDate).not()) {
-                            activeCompanies.add(company)
-                            return@forEach
-                        }
-                    }
-                }
-                delay(100.milliseconds)
+            val hasRecentValidFilings = filings.any { filing ->
+                val filingDate = LocalDate.parse(filing.second, dateFormatter)
+                filing.first in validForms && filingDate.isBefore(cutoffDate).not()
             }
-            println("Time Elapsed: $timeElapsed")
+
+            if (hasRecentValidFilings) {
+                activeCompanies.add(company)
+            }
+
+            delay(100.milliseconds)
         }
         println("Final Active Companies Size: ${activeCompanies.size}")
         return activeCompanies

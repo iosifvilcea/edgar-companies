@@ -1,5 +1,6 @@
 package com.blankthings
 
+import CompanyRepositoryImpl
 import database.configureDatabases
 import io.ktor.server.application.*
 import io.ktor.server.plugins.ratelimit.*
@@ -12,7 +13,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val companyRepository = FakeCompanyRepositoryImpl()
+    val companyRepository = CompanyRepositoryImpl()
 
     configureDatabases()
     configureStatusPages()
