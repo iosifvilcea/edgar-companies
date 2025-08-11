@@ -4,13 +4,9 @@ import com.blankthings.ActiveCompany
 import com.blankthings.Filings
 import com.blankthings.Recent
 import kotlinx.coroutines.Dispatchers
-import org.jetbrains.exposed.v1.core.TextColumnType
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
-import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
-import org.jetbrains.exposed.v1.dao.Entity
-import org.jetbrains.exposed.v1.dao.EntityClass
 import org.jetbrains.exposed.v1.dao.LongEntity
 import org.jetbrains.exposed.v1.dao.LongEntityClass
 import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
