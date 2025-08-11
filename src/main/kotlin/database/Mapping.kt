@@ -9,7 +9,6 @@ import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
-import org.jetbrains.exposed.v1.datetime.timestampWithTimeZone
 import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
 
 
@@ -23,8 +22,6 @@ object ActiveCompanyTable: IntIdTable("active_companies") {
     val ein = varchar("ein", 20)
     val fillingDates = array<String>("filing_dates")
     val fillingForms = array<String>("filing_forms")
-    val createdAt = timestampWithTimeZone("created_at")
-    val updatedAt = timestampWithTimeZone("updated_at")
 }
 
 class ActiveCompanyDao(id: EntityID<Int>): IntEntity(id) {

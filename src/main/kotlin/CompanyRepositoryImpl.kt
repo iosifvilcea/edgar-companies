@@ -1,6 +1,5 @@
 import com.blankthings.ActiveCompany
 import com.blankthings.CompanyRepository
-import com.blankthings.HttpClientConfig
 import database.ActiveCompanyDao
 import database.ActiveCompanyTable
 import database.ActiveCompanyTable.cik
@@ -14,16 +13,13 @@ import database.ActiveCompanyTable.sicDescription
 import database.ActiveCompanyTable.tickers
 import database.daoToModel
 import database.suspendTransaction
-import io.ktor.client.*
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.notInList
 import org.jetbrains.exposed.v1.core.statements.UpsertSqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.batchInsert
 import org.jetbrains.exposed.v1.jdbc.batchUpsert
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 
-class CompanyRepositoryImpl(
-    val client: HttpClient = HttpClientConfig.client
-): CompanyRepository {
+class CompanyRepositoryImpl: CompanyRepository {
     override suspend fun allActiveCompanies(): List<ActiveCompany> = suspendTransaction {
         ActiveCompanyDao.all().map(::daoToModel)
     }
