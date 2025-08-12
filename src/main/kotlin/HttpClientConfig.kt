@@ -18,6 +18,7 @@ object HttpClientConfig {
                 prettyPrint = true
                 isLenient = true
                 ignoreUnknownKeys = true
+                explicitNulls = false
             })
         }
         defaultRequest {

@@ -11,6 +11,9 @@ fun Route.companiesRoutes(companyRepository: CompanyRepository) {
         get {
             val activeCompanies = companyRepository.allActiveCompanies()
             println("Fetched ActiveCompanies: $activeCompanies")
+            activeCompanies.forEach {
+                println("" + it.cik + " , " + it.name + " , " + it.sicDescription + " , " + it.entityType)
+            }
         }
     }
 
@@ -22,7 +25,7 @@ fun Route.companiesRoutes(companyRepository: CompanyRepository) {
                 syncWorker.syncActiveCompanies()
                 call.respond(HttpStatusCode.OK, "Sync completed")
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, "Sync failed: ${e.message}")
+                call.respond(HttpStatusCode.InternalServerError, "Sync failed: ${e.message} : ${e.printStackTrace()}")
             }
         }
     }

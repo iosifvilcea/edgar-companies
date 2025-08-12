@@ -21,7 +21,7 @@ object ActiveCompanyTable: LongIdTable("active_companies", "cik") {
     val name = varchar("name", MAX_NAME_LENGTH)
     val tickers = array<String>("tickers")
     val exchanges = array<String>("exchanges")
-    val ein = varchar("ein", MAX_EIN_LENGTH).nullable()
+    val ein = varchar("ein", MAX_EIN_LENGTH)
     val fillingDates = array<String>("filing_dates")
     val fillingForms = array<String>("filing_forms")
 }
@@ -46,8 +46,8 @@ fun ActiveCompanyDao.toModel() = ActiveCompany(
     entityType = entityType,
     sicDescription = sicDescription,
     name = name,
-    tickers = tickers,
-    exchanges = exchanges,
+    tickers = tickers.orEmpty(),
+    exchanges = exchanges.orEmpty(),
     ein = ein,
     filings = Filings(
         Recent(

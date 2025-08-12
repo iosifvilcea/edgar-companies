@@ -1,7 +1,10 @@
 import com.blankthings.ActiveCompany
+import com.blankthings.CompanyRaw
 import com.blankthings.CompanyRepository
 import com.blankthings.CompanyTicker
 import com.blankthings.HttpClientConfig
+import com.blankthings.isValid
+import com.blankthings.toActiveCompany
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -38,16 +41,19 @@ class ActiveCompaniesSyncWorker(
         companyTickers.forEach { companyTicker ->
             val cikPadded = companyTicker.value.cik.toString().padStart(10, '0')
             val baseSubmissionUrl = "https://data.sec.gov/submissions/CIK${cikPadded}.json"
-            val company: ActiveCompany = client.get(baseSubmissionUrl).body()
-            val filings = company.filings.recent.form.zip(company.filings.recent.filingDate)
+            val companyRawData: CompanyRaw = client.get(baseSubmissionUrl).body()
 
-            val hasRecentValidFilings = filings.any { filing ->
-                val filingDate = LocalDate.parse(filing.second, dateFormatter)
-                filing.first in validForms && filingDate.isBefore(cutoffDate).not()
-            }
+            val company = companyRawData.toActiveCompany()
+            if (company.isValid()) {
+                val filings = company.filings.recent.form.zip(company.filings.recent.filingDate)
+                val hasRecentValidFilings = filings.any { filing ->
+                    val filingDate = LocalDate.parse(filing.second, dateFormatter)
+                    filing.first in validForms && filingDate.isBefore(cutoffDate).not()
+                }
 
-            if (hasRecentValidFilings) {
-                activeCompanies.add(company)
+                if (hasRecentValidFilings) {
+                    activeCompanies.add(company)
+                }
             }
 
             delay(100.milliseconds)
