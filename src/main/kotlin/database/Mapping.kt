@@ -46,8 +46,8 @@ fun ActiveCompanyDao.toModel() = ActiveCompany(
     entityType = entityType,
     sicDescription = sicDescription,
     name = name,
-    tickers = tickers.orEmpty(),
-    exchanges = exchanges.orEmpty(),
+    tickers = tickers,
+    exchanges = exchanges,
     ein = ein,
     filings = Filings(
         Recent(

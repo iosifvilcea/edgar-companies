@@ -30,11 +30,7 @@ class ActiveCompaniesSyncWorker(
     }
 
     @OptIn(ExperimentalTime::class)
-    private suspend fun getCompaniesTicker(): Map<String, CompanyTicker>  {
-        val companyTickers: Map<String, CompanyTicker> = client.get(baseUrl).body()
-        println("Total Companies in Edgar: ${companyTickers.values.size}")
-        return companyTickers
-    }
+    private suspend fun getCompaniesTicker(): Map<String, CompanyTicker> = client.get(baseUrl).body()
 
     suspend fun getActiveCompany(companyTickers: Map<String, CompanyTicker>): List<ActiveCompany> {
         val activeCompanies = mutableListOf<ActiveCompany>()

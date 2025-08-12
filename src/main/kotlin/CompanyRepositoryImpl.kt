@@ -30,7 +30,7 @@ class CompanyRepositoryImpl: CompanyRepository {
             name = activeCompany.name
             tickers = activeCompany.tickers
             exchanges = activeCompany.exchanges
-            ein = activeCompany.ein.orEmpty()
+            ein = activeCompany.ein
             fillingDates = activeCompany.filings.recent.filingDate
             fillingForms = activeCompany.filings.recent.form
         }
@@ -48,7 +48,7 @@ class CompanyRepositoryImpl: CompanyRepository {
                 this[name] = activeCompany.name
                 this[tickers] = activeCompany.tickers
                 this[exchanges] = activeCompany.exchanges
-                this[ein] = activeCompany.ein.orEmpty()
+                this[ein] = activeCompany.ein
                 this[fillingDates] = activeCompany.filings.recent.filingDate
                 this[fillingForms] = activeCompany.filings.recent.form
             }
@@ -64,7 +64,7 @@ class CompanyRepositoryImpl: CompanyRepository {
 
     override suspend fun updateCompanies(activeCompanies: List<ActiveCompany>) {
         suspendTransaction {
-            ActiveCompanyTable.batchUpsert(
+            val result = ActiveCompanyTable.batchUpsert(
                 activeCompanies,
                 keys = arrayOf(ActiveCompanyTable.id)
             ) { company ->
@@ -74,7 +74,7 @@ class CompanyRepositoryImpl: CompanyRepository {
                 this[name] = company.name
                 this[tickers] = company.tickers
                 this[exchanges] = company.exchanges
-                this[ein] = company.ein.orEmpty()
+                this[ein] = company.ein
                 this[fillingDates] = company.filings.recent.filingDate
                 this[fillingForms] = company.filings.recent.form
             }
@@ -82,6 +82,7 @@ class CompanyRepositoryImpl: CompanyRepository {
             ActiveCompanyTable.deleteWhere {
                 ActiveCompanyTable.id notInList activeCompanies.map { it.cik }
             }
+            println("Number of Active Companies updated to DB: ${result.size}")
         }
     }
 }
