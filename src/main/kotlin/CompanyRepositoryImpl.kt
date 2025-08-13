@@ -82,7 +82,6 @@ class CompanyRepositoryImpl: CompanyRepository {
             ActiveCompanyTable.deleteWhere {
                 ActiveCompanyTable.id notInList activeCompanies.map { it.cik }
             }
-            println("Number of Active Companies updated to DB: ${result.size}")
         }
     }
 }

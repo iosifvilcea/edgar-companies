@@ -13,6 +13,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 class ActiveCompaniesSyncWorker(
     val client: HttpClient = HttpClientConfig.client,
@@ -34,27 +35,29 @@ class ActiveCompaniesSyncWorker(
 
     suspend fun getActiveCompany(companyTickers: Map<String, CompanyTicker>): List<ActiveCompany> {
         val activeCompanies = mutableListOf<ActiveCompany>()
-        companyTickers.forEach { companyTicker ->
-            val cikPadded = companyTicker.value.cik.toString().padStart(10, '0')
-            val baseSubmissionUrl = "https://data.sec.gov/submissions/CIK${cikPadded}.json"
-            val companyRawData: CompanyRaw = client.get(baseSubmissionUrl).body()
+        val timeElapsed = measureTime {
+            companyTickers.forEach { companyTicker ->
+                val cikPadded = companyTicker.value.cik.toString().padStart(10, '0')
+                val baseSubmissionUrl = "https://data.sec.gov/submissions/CIK${cikPadded}.json"
+                val companyRawData: CompanyRaw = client.get(baseSubmissionUrl).body()
 
-            val company = companyRawData.toActiveCompany()
-            if (company.isValid()) {
-                val filings = company.filings.recent.form.zip(company.filings.recent.filingDate)
-                val hasRecentValidFilings = filings.any { filing ->
-                    val filingDate = LocalDate.parse(filing.second, dateFormatter)
-                    filing.first in validForms && filingDate.isBefore(cutoffDate).not()
+                val company = companyRawData.toActiveCompany()
+                if (company.isValid()) {
+                    val filings = company.filings.recent.form.zip(company.filings.recent.filingDate)
+                    val hasRecentValidFilings = filings.any { filing ->
+                        val filingDate = LocalDate.parse(filing.second, dateFormatter)
+                        filing.first in validForms && filingDate.isBefore(cutoffDate).not()
+                    }
+
+                    if (hasRecentValidFilings) {
+                        activeCompanies.add(company)
+                    }
                 }
 
-                if (hasRecentValidFilings) {
-                    activeCompanies.add(company)
-                }
+                delay(100.milliseconds)
             }
-
-            delay(100.milliseconds)
         }
-        println("Final Active Companies Size: ${activeCompanies.size}")
+        println("Final Active Companies Size: ${activeCompanies.size}, Time Elapsed: $timeElapsed")
         return activeCompanies
     }
 }

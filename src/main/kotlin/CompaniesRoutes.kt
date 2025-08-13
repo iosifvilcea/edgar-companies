@@ -10,7 +10,6 @@ fun Route.companiesRoutes(companyRepository: CompanyRepository) {
     route("/companies") {
         get {
             val activeCompanies = companyRepository.allActiveCompanies()
-            println("Fetched ActiveCompanies: $activeCompanies")
             activeCompanies.forEach {
                 println("" + it.cik + " , " + it.name + " , " + it.sicDescription + " , " + it.entityType)
             }
