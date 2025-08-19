@@ -41,15 +41,16 @@ class ActiveCompaniesSyncWorker(
                 val baseSubmissionUrl = "https://data.sec.gov/submissions/CIK${cikPadded}.json"
                 val companyRawData: CompanyRaw = client.get(baseSubmissionUrl).body()
 
-                val company = companyRawData.toActiveCompany()
-                if (company.isValid()) {
-                    val filings = company.filings.recent.form.zip(company.filings.recent.filingDate)
-                    val hasRecentValidFilings = filings.any { filing ->
-                        val filingDate = LocalDate.parse(filing.second, dateFormatter)
-                        filing.first in validForms && filingDate.isBefore(cutoffDate).not()
-                    }
+                val filingDates = companyRawData.filings?.recent?.filingDate?.filterNotNull().orEmpty()
+                val filings = companyRawData.filings?.recent?.form?.zip(filingDates)
+                val hasRecentValidFilings = filings?.any { filing ->
+                    val filingDate = LocalDate.parse(filing.second, dateFormatter)
+                    filing.first in validForms && filingDate.isBefore(cutoffDate).not()
+                } ?: false
 
-                    if (hasRecentValidFilings) {
+                if (hasRecentValidFilings) {
+                    val company = companyRawData.toActiveCompany()
+                    if (company.isValid()) {
                         activeCompanies.add(company)
                     }
                 }

@@ -1,8 +1,6 @@
 package database
 
 import com.blankthings.ActiveCompany
-import com.blankthings.Filings
-import com.blankthings.Recent
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
@@ -22,8 +20,6 @@ object ActiveCompanyTable: LongIdTable("active_companies", "cik") {
     val tickers = array<String>("tickers")
     val exchanges = array<String>("exchanges")
     val ein = varchar("ein", MAX_EIN_LENGTH)
-    val fillingDates = array<String>("filing_dates")
-    val fillingForms = array<String>("filing_forms")
 }
 
 class ActiveCompanyDao(id: EntityID<Long>): LongEntity(id) {
@@ -34,8 +30,6 @@ class ActiveCompanyDao(id: EntityID<Long>): LongEntity(id) {
     var tickers by ActiveCompanyTable.tickers
     var exchanges by ActiveCompanyTable.exchanges
     var ein by ActiveCompanyTable.ein
-    var fillingDates by ActiveCompanyTable.fillingDates
-    var fillingForms by ActiveCompanyTable.fillingForms
 }
 
 suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
@@ -48,11 +42,5 @@ fun ActiveCompanyDao.toModel() = ActiveCompany(
     name = name,
     tickers = tickers,
     exchanges = exchanges,
-    ein = ein,
-    filings = Filings(
-        Recent(
-            filingDate = fillingDates,
-            form = fillingForms
-        )
-    )
+    ein = ein
 )

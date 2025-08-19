@@ -5,8 +5,6 @@ import database.ActiveCompanyTable
 import database.ActiveCompanyTable.ein
 import database.ActiveCompanyTable.entityType
 import database.ActiveCompanyTable.exchanges
-import database.ActiveCompanyTable.fillingDates
-import database.ActiveCompanyTable.fillingForms
 import database.ActiveCompanyTable.name
 import database.ActiveCompanyTable.sicDescription
 import database.ActiveCompanyTable.tickers
@@ -31,8 +29,6 @@ class CompanyRepositoryImpl: CompanyRepository {
             tickers = activeCompany.tickers
             exchanges = activeCompany.exchanges
             ein = activeCompany.ein
-            fillingDates = activeCompany.filings.recent.filingDate
-            fillingForms = activeCompany.filings.recent.form
         }
     }
 
@@ -49,8 +45,6 @@ class CompanyRepositoryImpl: CompanyRepository {
                 this[tickers] = activeCompany.tickers
                 this[exchanges] = activeCompany.exchanges
                 this[ein] = activeCompany.ein
-                this[fillingDates] = activeCompany.filings.recent.filingDate
-                this[fillingForms] = activeCompany.filings.recent.form
             }
         }
     }
@@ -75,8 +69,6 @@ class CompanyRepositoryImpl: CompanyRepository {
                 this[tickers] = company.tickers
                 this[exchanges] = company.exchanges
                 this[ein] = company.ein
-                this[fillingDates] = company.filings.recent.filingDate
-                this[fillingForms] = company.filings.recent.form
             }
 
             ActiveCompanyTable.deleteWhere {

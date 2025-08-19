@@ -10,28 +10,7 @@ data class ActiveCompany(
     val name: String,
     val tickers: List<String>,
     val exchanges: List<String>,
-    val ein: String,
-    val filings: Filings
-)
-
-@Serializable
-data class Filings(
-    val recent: Recent
-) {
-    companion object {
-        fun empty() = Filings(
-            Recent(
-                filingDate = mutableListOf(),
-                form = mutableListOf()
-            )
-        )
-    }
-}
-
-@Serializable
-data class Recent(
-    val filingDate: List<String>,
-    val form: List<String>
+    val ein: String
 )
 
 @Serializable
@@ -64,15 +43,7 @@ fun CompanyRaw.toActiveCompany() = ActiveCompany(
     name = name.orEmpty(),
     tickers = tickers.orEmpty().filterNotNull(),
     exchanges = exchanges.orEmpty().filterNotNull(),
-    ein = ein.orEmpty(),
-    filings = filings?.toFilings() ?: Filings.empty()
-)
-
-fun FilingsRaw.toFilings() = Filings(
-    recent = Recent(
-        filingDate = this.recent?.filingDate?.filterNotNull() ?: emptyList(),
-        form = this.recent?.form?.filterNotNull() ?: emptyList()
-    )
+    ein = ein.orEmpty()
 )
 
 fun ActiveCompany.isValid(): Boolean {
@@ -80,7 +51,5 @@ fun ActiveCompany.isValid(): Boolean {
             sicDescription.isNotBlank() &&
             name.isNotBlank() &&
             tickers.isNotEmpty() &&
-            exchanges.isNotEmpty() &&
-            filings.recent.form.isNotEmpty() &&
-            filings.recent.filingDate.isNotEmpty()
+            exchanges.isNotEmpty()
 }
