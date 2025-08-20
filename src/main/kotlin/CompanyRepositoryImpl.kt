@@ -14,6 +14,7 @@ import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.notInList
 import org.jetbrains.exposed.v1.core.statements.UpsertSqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.batchUpsert
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.upsert
 
 class CompanyRepositoryImpl: CompanyRepository {
     override suspend fun allActiveCompanies(): List<ActiveCompany> = suspendTransaction {
@@ -56,6 +57,21 @@ class CompanyRepositoryImpl: CompanyRepository {
         rowDeleted == 1
     }
 
+    override suspend fun updateCompany(activeCompany: ActiveCompany) {
+        suspendTransaction {
+            ActiveCompanyTable.upsert(ActiveCompanyTable.id) {
+                it[ActiveCompanyTable.id] = activeCompany.cik
+                it[entityType] = activeCompany.entityType
+                it[sicDescription] = activeCompany.sicDescription
+                it[name] = activeCompany.name
+                it[tickers] = activeCompany.tickers
+                it[exchanges] = activeCompany.exchanges
+                it[ein] = activeCompany.ein
+            }
+        }
+        println("${activeCompany.name} updated to DB.")
+    }
+
     override suspend fun updateCompanies(activeCompanies: List<ActiveCompany>) {
         suspendTransaction {
             val result = ActiveCompanyTable.batchUpsert(
@@ -71,9 +87,12 @@ class CompanyRepositoryImpl: CompanyRepository {
                 this[ein] = company.ein
             }
 
-            ActiveCompanyTable.deleteWhere {
+            println("Update Companies Result: $result")
+
+            val numberOfDeletedRows = ActiveCompanyTable.deleteWhere {
                 ActiveCompanyTable.id notInList activeCompanies.map { it.cik }
             }
+            println("Number Of Deleted Rows: $numberOfDeletedRows")
         }
     }
 }

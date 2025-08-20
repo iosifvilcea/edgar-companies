@@ -26,14 +26,13 @@ class ActiveCompaniesSyncWorker(
 
     suspend fun syncActiveCompanies() {
         val companyTickers = getCompaniesTicker()
-        val activeCompanies = getActiveCompany(companyTickers)
-        companyRepository.updateCompanies(activeCompanies)
+        updateActiveCompanies(companyTickers)
     }
 
     @OptIn(ExperimentalTime::class)
     private suspend fun getCompaniesTicker(): Map<String, CompanyTicker> = client.get(baseUrl).body()
 
-    suspend fun getActiveCompany(companyTickers: Map<String, CompanyTicker>): List<ActiveCompany> {
+    suspend fun updateActiveCompanies(companyTickers: Map<String, CompanyTicker>): List<ActiveCompany> {
         val activeCompanies = mutableListOf<ActiveCompany>()
         val timeElapsed = measureTime {
             companyTickers.forEach { companyTicker ->
@@ -52,6 +51,7 @@ class ActiveCompaniesSyncWorker(
                     val company = companyRawData.toActiveCompany()
                     if (company.isValid()) {
                         activeCompanies.add(company)
+                        companyRepository.updateCompany(company)
                     }
                 }
 

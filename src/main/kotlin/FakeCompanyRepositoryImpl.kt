@@ -107,6 +107,10 @@ class FakeCompanyRepositoryImpl: CompanyRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateCompany(activeCompany: ActiveCompany) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun updateCompanies(activeCompanies: List<ActiveCompany>) {
         TODO("Not yet implemented")
     }
